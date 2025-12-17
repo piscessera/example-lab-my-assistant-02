@@ -4,7 +4,8 @@ description: Learn from Retrospectives. Read external/past retros and improve ru
 
 1. List available retrospectives (local or from a specified path).
 2. Read the selected retrospective.
-3. Propose updates to `.agent/rules/` based on findings.
+3. **Context**: List and read relevant files in `.agent/rules/`.
+4. Propose updates to `.agent/rules/` based on findings.
 
 ```powershell
 # 1. Select Source
