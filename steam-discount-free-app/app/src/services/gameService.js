@@ -1,35 +1,51 @@
 
-const BASE_URL = 'https://www.cheapshark.com/api/1.0';
+// Use local proxy to avoid CORS
+const BASE_URL = '/api/steam';
 
 export const fetchFreeGames = async () => {
     try {
-        // upperPrice=0 implies free. storeID=1 is Steam.
-        // CheapShark returns 100% off deals here usually.
-        const response = await fetch(`${BASE_URL}/deals?storeID=1&upperPrice=0&pageSize=60`);
+        // Basic Scraping Approach via Proxy
+        // We fetch the HTML page directly as the user requested to "scrape" it.
+        const response = await fetch(`${BASE_URL}/search/?maxprice=free&supportedlang=english&specials=1&ndl=1`);
 
         if (!response.ok) {
             throw new Error(`API Error: ${response.status}`);
         }
 
-        const data = await response.json();
+        const htmlText = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
 
-        // Filter to ensure savings are 100% just in case
-        // and parse needed fields
-        return data
-            .filter(game => parseFloat(game.savings) >= 100)
-            .map(game => ({
-                id: game.dealID,
-                title: game.title,
-                thumbnail: game.thumb,
-                steamAppId: game.steamAppID,
-                normalPrice: game.normalPrice,
-                salePrice: game.salePrice, // Should be 0.00
-                savings: Math.round(parseFloat(game.savings)),
-                steamRating: game.steamRatingText,
-                dealRating: game.dealRating
-            }));
+        const rows = doc.querySelectorAll('a.search_result_row');
+
+        return Array.from(rows).map(row => {
+            const title = row.querySelector('.title')?.textContent;
+            const img = row.querySelector('.search_capsule img')?.getAttribute('src');
+            // Image src might be lazy-loaded in 'srcset' or 'src'. Steam uses src usually.
+
+            const appid = row.getAttribute('data-ds-appid');
+
+            const originalPriceEl = row.querySelector('.discount_original_price');
+            const originalPrice = originalPriceEl ? originalPriceEl.textContent.trim() : null;
+
+            const discountEl = row.querySelector('.discount_pct');
+            const discount = discountEl ? discountEl.textContent.replace('-', '').replace('%', '').trim() : "100";
+
+            return {
+                id: appid || Math.random().toString(),
+                title: title || "Unknown",
+                thumbnail: img || "",
+                steamAppId: appid,
+                normalPrice: originalPrice,
+                salePrice: "Free",
+                savings: parseInt(discount) || 100,
+                steamRating: "N/A",
+                dealRating: "10.0"
+            };
+        });
+
     } catch (error) {
-        console.error('Failed to fetch games:', error);
-        throw error;
+        console.error('Failed to scrape Steam:', error);
+        return [];
     }
 };

@@ -40,8 +40,9 @@ if ($issueUrl) {
 
 // turbo
 1. Investigate necessary libraries or patterns.
-2. Consider edge cases and performance.
-3. Update the GitHub Issue with Analysis & Design details.
+2. **Verify Third-Party Data**: If using an External API, run `curl` or `fetch` to confirm data structure and availability *before* planning implementation.
+3. Consider edge cases and performance.
+4. Update the GitHub Issue with Analysis & Design details.
 
 ```powershell
 # Optional: Update Issue body with Analysis

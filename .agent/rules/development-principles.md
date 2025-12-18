@@ -58,6 +58,11 @@ description: Development principles and best practices for code quality, workflo
     - **Fields**: Use standardized field names.
     - **Versioning**: Include build version or commit hash in logs.
 
+## 5. UI/UX Resilience
+- **Fail Gracefully**: UI should handle missing data (e.g., API failures, null values) without crashing or showing technical placeholders (like "$Paid").
+- **Empty States**: Always design for empty states (e.g., "No games found") rather than leaving a blank screen.
+- **Feedback**: Provide immediate visual feedback for user actions (loading spinners, success/error toasts).
+
 ## 4. Testing
 - **Pre-Completion Checklist**: Before marking a task as done, ensure:
   1. **Build**: The application builds successfully without errors.
@@ -90,4 +95,5 @@ description: Development principles and best practices for code quality, workflo
       - [Time]: [Short summary of activity]
     Notes: [Brief summary of changes, decisions, or issues]
     ```
+
 
